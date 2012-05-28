@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% load i18n jmbo_inclusion_tags foundry_tags friends_tags %}
+
+{% block content %}
+
+    <div class="content member-detail">
+        {% profile_blurb user %}
+        <div class="title">{% trans "Who's in your team?" %}</div>
+        <p>Now invite your friends which you believe are the key men in your team.</p>
+        <form action="." method="POST" class="foundry-form">
+            {% csrf_token %}
+            {{ form.as_div }}
+            <p>REMEMBER: The friends you invite have to join Guinness VIP for your entry to count. Only friends who are not already Guinness VIPs will be accepted.</p>
+            <p><a href="/perfect_team_terms/">Terms & Conditions</a> apply.</p>
+            <div class="buttons">
+                <input type="submit" value="{% trans "Send invitations" %}" />
+            </div>
+        </form>
+    </div>  
+{% endblock %}

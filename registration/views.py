@@ -10,7 +10,8 @@ from django.contrib import messages
 from django.contrib.auth import login, get_backends
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
-from django.views.generic import FormView, UpdateView, DetailView
+from django.http import HttpResponseRedirect
+from django.views.generic import FormView, CreateView, UpdateView, DetailView
 from django.shortcuts import get_object_or_404
 
 from preferences import preferences
@@ -27,13 +28,19 @@ class RegistrationView(FormView):
     #--------------------------------------------------------------------------
     def get_form_kwargs(self):
         kwargs = super(RegistrationView, self).get_form_kwargs()
-        kwargs.update({ 'show_age_gateway' : self.show_age_gateway })
+        kwargs.update({ 'show_age_gateway' : self.show_age_gateway,
+                        'offsite_invite' : self.request.session['invitation'] if self.request.session.has_key('invitation') else None 
+                        })
         return kwargs
     
     #--------------------------------------------------------------------------
     def form_valid(self, form):
         member = form.save()
         
+        offsite_invite_id = form.cleaned_data['offsite_invite']
+        if offsite_invite_id:
+            models.OffSiteInvite.objects.get(pk=offsite_invite_id).accept(member)
+            
         backend = get_backends()[0]
         member.backend = "%s.%s" % (backend.__module__, backend.__class__.__name__)
         login(self.request, member)            
@@ -67,14 +74,60 @@ class RedirectFromToken(DetailView):
         return http.HttpResponseRedirect(token_obj.url)
 
 #==============================================================================
-class OffSiteInviteView(DetailView):
+class CreateOffSiteInviteView(CreateView):
+    
+    #--------------------------------------------------------------------------
+    def get_initial(self):
+        return {'from_member' : self.request.user.member}
+    
+    #--------------------------------------------------------------------------
+    def form_valid(self, form):
+        msg = _("Your invitation has been sent.")
+        messages.success(self.request, msg, fail_silently=True)
+        return super(CreateOffSiteInviteView, self).form_valid(form)
+
+#==============================================================================
+class AcceptOffSiteInviteView(DetailView):
     
     #--------------------------------------------------------------------------
     def dispatch(self, request, *args, **kwargs):
-        invites = models.OffSiteInvite.objects.filter(from_user=kwargs['user_id'], 
-                                               to_mobile=kwargs['to_mobile']).order_by('-id')
+        invites = models.OffSiteInvite.objects.filter(from_member=kwargs['member_id'], 
+                                                      to_mobile_number=kwargs['to_mobile_number']).order_by('-id')
         if invites:
             request.session['invitation'] = invites[0]
             return http.HttpResponseRedirect(reverse('join'))
         else:
             return http.Http404('huh?')
+
+#==============================================================================
+class PerfectTeamChooseView(FormView):
+    
+    #--------------------------------------------------------------------------
+    def form_valid(self, form):
+        self.team = form.cleaned_data['team']
+        return HttpResponseRedirect(self.get_success_url())
+    
+    #--------------------------------------------------------------------------
+    def get_success_url(self):
+        return reverse('create_perfect_team_invite', args=[self.team.id])
+
+#==============================================================================
+class CreatePerfectTeamInviteView(CreateView):
+    
+    #--------------------------------------------------------------------------
+    def get_team(self):
+        return models.PerfectTeam.objects.get(pk=self.kwargs['team_id'])
+    
+    #--------------------------------------------------------------------------
+    def get_initial(self):
+        return {'team' : self.get_team(),
+                'from_member' : self.request.user.member
+                }
+    
+    #--------------------------------------------------------------------------
+    def form_valid(self, form):
+        msg = _("Your invitations has been sent.")
+        messages.success(self.request, msg, fail_silently=True)
+        return super(CreatePerfectTeamInviteView, self).form_valid(form)
+
+

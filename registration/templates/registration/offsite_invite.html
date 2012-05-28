@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% load i18n jmbo_inclusion_tags foundry_tags friends_tags %}
+
+{% block content %}
+
+    <div class="content member-detail">
+        {% profile_blurb user %}
+        <div class="title">{% trans "Invite a friend" %}</div>
+        <form action="." method="POST" class="foundry-form">
+	        {% csrf_token %}
+	        {{ form.as_div }}
+	        <div class="buttons">
+	            <input type="submit" value="{% trans "Send invitation" %}" />
+	        </div>
+	    </form>
+    </div>  
+{% endblock %}

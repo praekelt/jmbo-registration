@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load i18n jmbo_inclusion_tags foundry_tags friends_tags %}
+
+{% block content %}
+
+    <div class="content member-detail">
+        <div class="title">{% trans "Who's in your team?" %}</div>
+        <p>Which of your friends have the skills of the superstars in your favorite team?</p>
+        <p>First select your team:</p>
+        <form action="." method="POST" class="foundry-form">
+            {% csrf_token %}
+            {{ form.as_div }}
+            <div class="buttons">
+                <input type="submit" value="{% trans "Next" %}" />
+            </div>
+        </form>
+    </div>  
+{% endblock %}

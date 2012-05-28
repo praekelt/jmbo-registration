@@ -12,11 +12,11 @@ setup(
     packages = find_packages(),
     install_requires = [
         'jmbo-foundry',
+        'jmbo-friends',
     ],
     include_package_data=True,
     tests_require=[
         'django-setuptest',
-        'panomena-mobile==0.0.7',
     ],
     test_suite="setuptest.SetupTestSuite",
     classifiers=[
