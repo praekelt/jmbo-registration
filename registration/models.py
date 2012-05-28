@@ -88,10 +88,15 @@ class OffSiteInvite(models.Model):
 class PerfectTeam(models.Model):
     
     team_name = models.CharField(max_length=64)
+    
     player_1 = models.CharField(max_length=64)
+    player_1_description = models.CharField(max_length=64, null=True, blank=True)
     player_2 = models.CharField(max_length=64)
+    player_2_description = models.CharField(max_length=64, null=True, blank=True)
     player_3 = models.CharField(max_length=64)
+    player_3_description = models.CharField(max_length=64, null=True, blank=True)
     player_4 = models.CharField(max_length=64)
+    player_4_description = models.CharField(max_length=64, null=True, blank=True)
 
     #--------------------------------------------------------------------------
     def __unicode__(self):

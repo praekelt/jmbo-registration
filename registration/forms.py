@@ -266,13 +266,25 @@ class PerfectTeamInviteForm(forms.ModelForm):
         
         self.base_fields['team'].widget = forms.HiddenInput()
         self.base_fields['from_member'].widget = forms.HiddenInput()
-        self.base_fields['friend_1_name'].label = _(u'Friend 1 %s' % kwargs['initial']['team'].player_1)
+        
+        self.base_fields['friend_1_name'].label = _(u'Friend 1: %s' % kwargs['initial']['team'].player_1)
+        if kwargs['initial']['team'].player_1_description:
+            self.base_fields['friend_1_name'].label += ' (%s)' % kwargs['initial']['team'].player_1_description
         self.base_fields['friend_1_mobile_number'].label = _(u'Friend 1\'s mobile number')
-        self.base_fields['friend_2_name'].label = _(u'Friend 2 %s' % kwargs['initial']['team'].player_2)
+        
+        self.base_fields['friend_2_name'].label = _(u'Friend 2: %s' % kwargs['initial']['team'].player_2)
+        if kwargs['initial']['team'].player_2_description:
+            self.base_fields['friend_2_name'].label += ' (%s)' % kwargs['initial']['team'].player_2_description
         self.base_fields['friend_2_mobile_number'].label = _(u'Friend 2\'s mobile number')
-        self.base_fields['friend_3_name'].label = _(u'Friend 3 %s' % kwargs['initial']['team'].player_3)
+        
+        self.base_fields['friend_3_name'].label = _(u'Friend 3: %s' % kwargs['initial']['team'].player_3)
+        if kwargs['initial']['team'].player_3_description:
+            self.base_fields['friend_3_name'].label += ' (%s)' % kwargs['initial']['team'].player_3_description
         self.base_fields['friend_3_mobile_number'].label = _(u'Friend 3\'s mobile number')
-        self.base_fields['friend_4_name'].label = _(u'Friend 4 %s' % kwargs['initial']['team'].player_4)
+        
+        self.base_fields['friend_4_name'].label = _(u'Friend 4: %s' % kwargs['initial']['team'].player_4)
+        if kwargs['initial']['team'].player_4_description:
+            self.base_fields['friend_4_name'].label += ' (%s)' % kwargs['initial']['team'].player_4_description
         self.base_fields['friend_4_mobile_number'].label = _(u'Friend 4\'s mobile number')
         
         super(PerfectTeamInviteForm, self).__init__(*args, **kwargs)
@@ -334,71 +346,52 @@ class PerfectTeamInviteForm(forms.ModelForm):
             return self.cleaned_data['friend_4_mobile_number']
         
     #--------------------------------------------------------------------------    
+    def create_invite(self, from_member, friend_name, friend_mobile_number, team_player, team_player_description):
+        
+        invite = models.OffSiteInvite.objects.create(from_member=from_member, to_friend_name=friend_name, to_mobile_number=friend_mobile_number)
+            
+        content = u'%s, %s thinks you are the %s of your group of friends' % (friend_name, from_member, team_player)
+        
+        if team_player_description:
+            content += u', %s' % team_player_description
+            
+        content += u'. Join m.gvip.com and let us know: %s' % invite.url_token.tiny_url
+        try:
+            AmbientSMS(settings.FOUNDRY['sms_gateway_api_key'], settings.FOUNDRY['sms_gateway_password']).sendmsg(content, [friend_mobile_number])
+        except AmbientSMSError:
+            pass
+        
+        return invite
+        
+    #--------------------------------------------------------------------------    
     def save(self, *args, **kwargs):
         
         entry = super(PerfectTeamInviteForm, self).save(*args, **kwargs)
         
-        sms = AmbientSMS(
-            settings.FOUNDRY['sms_gateway_api_key'], 
-            settings.FOUNDRY['sms_gateway_password']
-        )
-        
         if self.cleaned_data['friend_1_mobile_number']:
-            entry.friend_1_invite = models.OffSiteInvite.objects.create(from_member=self.cleaned_data['from_member'],
-                                                                  to_friend_name=self.cleaned_data['friend_1_name'],
-                                                                  to_mobile_number=self.cleaned_data['friend_1_mobile_number'])
-            content = u'%s, %s invites you to join %s.  ' \
-                   'Click here to become a member: %s' % (entry.friend_1_invite.to_friend_name,
-                                                          entry.friend_1_invite.from_member,
-                                                          Site.objects.get_current(),
-                                                          entry.friend_1_invite.url_token.tiny_url)
-            try:
-                sms.sendmsg(content, [self.cleaned_data['friend_1_mobile_number']])
-            except AmbientSMSError:
-                pass
-        
+            entry.friend_1_invite = self.create_invite(self.cleaned_data['from_member'], 
+                                                       self.cleaned_data['friend_1_name'], 
+                                                       self.cleaned_data['friend_1_mobile_number'], 
+                                                       entry.team.player_1, 
+                                                       entry.team.player_1_description)
         if self.cleaned_data['friend_2_mobile_number']:
-            entry.friend_2_invite = models.OffSiteInvite.objects.create(from_member=self.cleaned_data['from_member'],
-                                                                  to_friend_name=self.cleaned_data['friend_2_name'],
-                                                                  to_mobile_number=self.cleaned_data['friend_2_mobile_number'])
-            content = u'%s, %s invites you to join %s.  ' \
-                   'Click here to become a member: %s' % (entry.friend_2_invite.to_friend_name,
-                                                          entry.friend_2_invite.from_member,
-                                                          Site.objects.get_current(),
-                                                          entry.friend_2_invite.url_token.tiny_url)
-            try:
-                sms.sendmsg(content, [self.cleaned_data['friend_2_mobile_number']])
-            except AmbientSMSError:
-                pass
-            
-        
+            entry.friend_2_invite = self.create_invite(self.cleaned_data['from_member'], 
+                                                       self.cleaned_data['friend_2_name'], 
+                                                       self.cleaned_data['friend_2_mobile_number'], 
+                                                       entry.team.player_2, 
+                                                       entry.team.player_2_description)
         if self.cleaned_data['friend_3_mobile_number']:
-            entry.friend_3_invite = models.OffSiteInvite.objects.create(from_member=self.cleaned_data['from_member'],
-                                                                  to_friend_name=self.cleaned_data['friend_3_name'],
-                                                                  to_mobile_number=self.cleaned_data['friend_3_mobile_number'])
-            content = u'%s, %s invites you to join %s.  ' \
-                   'Click here to become a member: %s' % (entry.friend_3_invite.to_friend_name,
-                                                          entry.friend_3_invite.from_member,
-                                                          Site.objects.get_current(),
-                                                          entry.friend_3_invite.url_token.tiny_url)
-            try:
-                sms.sendmsg(content, [self.cleaned_data['friend_3_mobile_number']])
-            except AmbientSMSError:
-                pass
-        
+            entry.friend_3_invite = self.create_invite(self.cleaned_data['from_member'], 
+                                                       self.cleaned_data['friend_3_name'], 
+                                                       self.cleaned_data['friend_3_mobile_number'], 
+                                                       entry.team.player_3, 
+                                                       entry.team.player_3_description)
         if self.cleaned_data['friend_4_mobile_number']:
-            entry.friend_4_invite = models.OffSiteInvite.objects.create(from_member=self.cleaned_data['from_member'],
-                                                                  to_friend_name=self.cleaned_data['friend_4_name'],
-                                                                  to_mobile_number=self.cleaned_data['friend_4_mobile_number'])
-            content = u'%s, %s invites you to join %s.  ' \
-                   'Click here to become a member: %s' % (entry.friend_4_invite.to_friend_name,
-                                                          entry.friend_4_invite.from_member,
-                                                          Site.objects.get_current(),
-                                                          entry.friend_4_invite.url_token.tiny_url)
-            try:
-                sms.sendmsg(content, [self.cleaned_data['friend_4_mobile_number']])
-            except AmbientSMSError:
-                pass
+            entry.friend_4_invite = self.create_invite(self.cleaned_data['from_member'], 
+                                                       self.cleaned_data['friend_4_name'], 
+                                                       self.cleaned_data['friend_4_mobile_number'], 
+                                                       entry.team.player_4, 
+                                                       entry.team.player_4_description)
             
         entry.save()
         
