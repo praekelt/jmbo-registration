@@ -39,17 +39,4 @@ urlpatterns = patterns('',
         views.RedirectFromToken.as_view(), 
         name='redirect_from_token'
         ),
-    
-    url(r'^perfect_team_choose/$',
-        views.PerfectTeamChooseView.as_view(form_class=forms.PerfectTeamChooseForm,
-                                            template_name='registration/perfect_team_choose.html'),
-        name='choose_perfect_team'
-        ),
-    
-    url(r'^perfect_team_invite/(?P<team_id>\d+)/$',
-        views.CreatePerfectTeamInviteView.as_view(form_class=forms.PerfectTeamInviteForm,
-                                                  template_name='registration/perfect_team_invite.html',
-                                                  success_url='/friends/my-friends/'),
-        name='create_perfect_team_invite'
-        ),
 )

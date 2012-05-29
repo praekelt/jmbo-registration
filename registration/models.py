@@ -83,46 +83,6 @@ class OffSiteInvite(models.Model):
                                                              friend=self.accepted_member)
         self.save()
         self.member_friendship.accept()
-        
-#==============================================================================
-class PerfectTeam(models.Model):
-    
-    team_name = models.CharField(max_length=64)
-    
-    player_1 = models.CharField(max_length=64)
-    player_1_description = models.CharField(max_length=64, null=True, blank=True)
-    player_2 = models.CharField(max_length=64)
-    player_2_description = models.CharField(max_length=64, null=True, blank=True)
-    player_3 = models.CharField(max_length=64)
-    player_3_description = models.CharField(max_length=64, null=True, blank=True)
-    player_4 = models.CharField(max_length=64)
-    player_4_description = models.CharField(max_length=64, null=True, blank=True)
-
-    #--------------------------------------------------------------------------
-    def __unicode__(self):
-        return self.team_name
-
-#==============================================================================
-class PerfectTeamEntry(models.Model):
-    
-    team = models.ForeignKey(PerfectTeam)
-    from_member = models.ForeignKey(Member) 
-    friend_1_name = models.CharField(max_length=64, null=True, blank=True)
-    friend_1_mobile_number = models.CharField(max_length=64, null=True, blank=True)
-    friend_1_invite = models.ForeignKey(OffSiteInvite, related_name='perfect_team_friend_1', 
-                                        null=True, blank=True) 
-    friend_2_name = models.CharField(max_length=64, null=True, blank=True)
-    friend_2_mobile_number = models.CharField(max_length=64, null=True, blank=True)
-    friend_2_invite = models.ForeignKey(OffSiteInvite, related_name='perfect_team_friend_2', 
-                                        null=True, blank=True) 
-    friend_3_name = models.CharField(max_length=64, null=True, blank=True)
-    friend_3_mobile_number = models.CharField(max_length=64, null=True, blank=True)
-    friend_3_invite = models.ForeignKey(OffSiteInvite, related_name='perfect_team_friend_3', 
-                                        null=True, blank=True) 
-    friend_4_name = models.CharField(max_length=64, null=True, blank=True)
-    friend_4_mobile_number = models.CharField(max_length=64, null=True, blank=True)
-    friend_4_invite = models.ForeignKey(OffSiteInvite, related_name='perfect_team_friend_4', 
-                                        null=True, blank=True)
     
     
     

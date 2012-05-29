@@ -10,7 +10,6 @@ from django.contrib import messages
 from django.contrib.auth import login, get_backends
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
-from django.http import HttpResponseRedirect
 from django.views.generic import FormView, CreateView, UpdateView, DetailView
 from django.shortcuts import get_object_or_404
 
@@ -98,36 +97,5 @@ class AcceptOffSiteInviteView(DetailView):
             return http.HttpResponseRedirect(reverse('join'))
         else:
             return http.Http404('huh?')
-
-#==============================================================================
-class PerfectTeamChooseView(FormView):
-    
-    #--------------------------------------------------------------------------
-    def form_valid(self, form):
-        self.team = form.cleaned_data['team']
-        return HttpResponseRedirect(self.get_success_url())
-    
-    #--------------------------------------------------------------------------
-    def get_success_url(self):
-        return reverse('create_perfect_team_invite', args=[self.team.id])
-
-#==============================================================================
-class CreatePerfectTeamInviteView(CreateView):
-    
-    #--------------------------------------------------------------------------
-    def get_team(self):
-        return models.PerfectTeam.objects.get(pk=self.kwargs['team_id'])
-    
-    #--------------------------------------------------------------------------
-    def get_initial(self):
-        return {'team' : self.get_team(),
-                'from_member' : self.request.user.member
-                }
-    
-    #--------------------------------------------------------------------------
-    def form_valid(self, form):
-        msg = _("Your invitations has been sent.")
-        messages.success(self.request, msg, fail_silently=True)
-        return super(CreatePerfectTeamInviteView, self).form_valid(form)
 
 
