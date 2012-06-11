@@ -26,7 +26,7 @@ from registration import models
 class JoinForm(UserCreationForm):
     """Custom join form"""
     accept_terms = forms.BooleanField(required=True, label="", widget=TermsCheckboxInput)
-    offsite_invite = forms.IntegerField(required=True, widget=forms.HiddenInput())
+    offsite_invite = forms.IntegerField(required=False, widget=forms.HiddenInput())
     
     class Meta:
         model = Member
