@@ -135,7 +135,7 @@ Please supply a different %(pretty_name)s." % {'pretty_name': pretty_name}
             self.fields['mobile_number'].label = _("Mobile number")
             self.fields['mobile_number'].help_text = _("The number must be in \
 international format and may start with a + sign. All other characters must \
-be numbers. No spaces allowed. An example is +27821234567.")
+be numbers. No spaces allowed. An example is +234821234567.")
         
     as_div = as_div
     
