@@ -192,7 +192,8 @@ class OffsiteInviteForm(forms.ModelForm):
         
         self.base_fields['from_member'].widget = forms.HiddenInput()
         self.base_fields['to_friend_name'].label = _(u'Friend\'s name')
-        self.base_fields['to_mobile_number'].label = _(u'Friend\'s mobile number')
+        self.base_fields['to_mobile_number'] = forms.IntegerField(label=_(u'Friend\'s mobile number'))
+        self.base_fields['to_mobile_number'].default_error_messages['invalid'] = 'You should enter only numbers in this field.'
         
         super(OffsiteInviteForm, self).__init__(*args, **kwargs)
     
