@@ -137,6 +137,12 @@ Please supply a different %(pretty_name)s." % {'pretty_name': pretty_name}
 international format and may start with a + sign. All other characters must \
 be numbers. No spaces allowed. An example is +234821234567.")
         
+        if self.fields.has_key('receive_sms'):
+            self.fields['receive_sms'].label = _("Yes, I want to receive news & alerts about competitions, events & more from Guinness via SMS")
+        
+        if self.fields.has_key('receive_email'):
+            self.fields['receive_sms'].label = _("via Email")
+        
     as_div = as_div
     
 class JoinFinishForm(forms.ModelForm):
