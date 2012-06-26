@@ -200,13 +200,16 @@ class OffsiteInviteForm(forms.ModelForm):
     #--------------------------------------------------------------------------    
     def clean(self):
         """Check if the mobile number is already registered."""
-        try:
-            Member.objects.get(mobile_number=self.cleaned_data['to_mobile_number'])
-            raise forms.ValidationError(
-                _(u'Sorry, but someone with that mobile number already has an ' \
-                  'account. Why not invite another friend?'))
-        except Member.DoesNotExist:
-            return self.cleaned_data
+        if self.cleaned_data.has_key('to_mobile_number'):
+            try:
+                Member.objects.get(mobile_number=self.cleaned_data['to_mobile_number'])
+                raise forms.ValidationError(
+                    _(u'Sorry, but someone with that mobile number already has an ' \
+                      'account. Why not invite another friend?'))
+            except Member.DoesNotExist:
+                return self.cleaned_data
+        
+        return self.cleaned_data
         
     #--------------------------------------------------------------------------    
     def save(self, *args, **kwargs):
