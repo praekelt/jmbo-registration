@@ -18,7 +18,7 @@ from preferences import preferences
 from jmbo.forms import as_div
 
 from foundry.models import Member, DefaultAvatar
-from foundry.forms import TermsCheckboxInput
+from foundry.forms import TermsCheckboxInput, RememberMeCheckboxInput
 from foundry.widgets import OldSchoolDateWidget
 
 from registration import models
@@ -27,6 +27,7 @@ class JoinForm(UserCreationForm):
     """Custom join form"""
     accept_terms = forms.BooleanField(required=True, label="", widget=TermsCheckboxInput)
     offsite_invite = forms.IntegerField(required=False, widget=forms.HiddenInput())
+    remember_me = forms.BooleanField(required=False, initial=True, label="", widget=RememberMeCheckboxInput)
     
     class Meta:
         model = Member
@@ -103,7 +104,7 @@ Please supply a different %(pretty_name)s." % {'pretty_name': pretty_name}
                 display_fields.append('dob')
         for name, field in self.fields.items():
             # Skip over protected fields
-            if name in ('id', 'username', 'password1', 'password2', 'accept_terms', 'offsite_invite'):
+            if name in ('id', 'username', 'password1', 'password2', 'accept_terms', 'offsite_invite', 'remember_me'):
                 continue
             if name not in display_fields:
                 del self.fields[name]
