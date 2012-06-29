@@ -3,7 +3,7 @@ Created on 25 May 2012
 
 @author: euan
 '''
-import uuid, urllib, urllib2
+import random, urllib, urllib2
 
 from django.db import models
 from django.contrib.sites.models import Site
@@ -11,16 +11,28 @@ from django.contrib.sites.models import Site
 from foundry.models import Member
 from friends.models import MemberFriend
 
+POPULATION = ['0','1','2','3','4','5','6','7','8','9',
+              'a','b','c','d','e','f','g','h','i','j','k','l','m',
+              'n','o','p','q','r','s','t','u','v','w','x','y','z']
+SIZE = 8
+
 #==============================================================================
 class URLToken(models.Model):
 
-    token = models.CharField(max_length=40)
+    token = models.CharField(max_length=8)
     url = models.CharField(max_length=256)
-    tiny_url = models.URLField()
 
     #--------------------------------------------------------------------------
     def __unicode__(self):
         return self.url
+    
+    def gen_token(self, population, size):
+        token = ''.join(random.sample(population, size))
+        try:
+            URLToken.objects.get(token=token)
+            return self.gen_token(population, size)
+        except URLToken.DoesNotExist:
+            return token
     
     #--------------------------------------------------------------------------
     def save(self, *args, **kwargs):
@@ -28,12 +40,7 @@ class URLToken(models.Model):
         Generates a tiny_url on the fly.
         """
         if not self.token:
-            self.token = uuid.uuid4()
-        
-        if not self.tiny_url:
-            token_url = 'http://%s/token/%s' % (Site.objects.get_current(), self.token)
-            url = 'http://tinyurl.com/api-create.php?url=%s' % urllib.quote(token_url)
-            self.tiny_url = urllib2.urlopen(url).read()
+            self.token = self.gen_token(POPULATION, SIZE)
             
         super(URLToken, self).save(*args, **kwargs)
             

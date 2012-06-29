@@ -35,8 +35,15 @@ urlpatterns = patterns('',
         name='accept_offsite_invite'
         ),
 
-    url(r'^token/(?P<token>[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})/$', 
+    url(r'^t/(?P<token>[a-z0-9]{8})/$', 
         views.RedirectFromToken.as_view(), 
         name='redirect_from_token'
         ),
+                       
+#    url(r'^token/(?P<token>[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})/$', 
+#        views.RedirectFromToken.as_view(), 
+#        name='redirect_from_token'
+#        ),
 )
+
+#   url = 'http://%s/token/%s' % (Site.objects.get_current(), self.token)

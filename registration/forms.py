@@ -227,11 +227,14 @@ class OffsiteInviteForm(forms.ModelForm):
             settings.FOUNDRY['sms_gateway_api_key'], 
             settings.FOUNDRY['sms_gateway_password']
         )
+        
+        url = 'http://%s/token/%s/' % (Site.objects.get_current(), invite.url_token.token)
+        
         content = u'%s, %s invites you to join %s.  ' \
                    'Click here to become a member: %s' % (invite.to_friend_name,
                                                           invite.from_member,
                                                           Site.objects.get_current(),
-                                                          invite.url_token.tiny_url)
+                                                          url)
         try:
             sms.sendmsg(content, [self.cleaned_data['to_mobile_number']])
         except AmbientSMSError:
