@@ -10,7 +10,7 @@ from django import forms
 from django.conf import settings
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.sites.models import Site
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext, ugettext_lazy as _
 
 from foundry.ambientmobile import AmbientSMS, AmbientSMSError
 
@@ -22,6 +22,18 @@ from foundry.forms import TermsCheckboxInput, RememberMeCheckboxInput
 from foundry.widgets import OldSchoolDateWidget
 
 from registration import models
+
+class ViaSMSCheckboxInput(forms.widgets.CheckboxInput):
+
+    def render(self, *args, **kwargs):
+        result = super(ViaSMSCheckboxInput, self).render(*args, **kwargs)
+        return result + ugettext("via SMS")
+    
+class ViaEmailCheckboxInput(forms.widgets.CheckboxInput):
+
+    def render(self, *args, **kwargs):
+        result = super(ViaEmailCheckboxInput, self).render(*args, **kwargs)
+        return result + ugettext("via Email")
 
 class JoinForm(UserCreationForm):
     """Custom join form"""
@@ -60,9 +72,8 @@ class JoinForm(UserCreationForm):
             if value is not None:
                 di = {'%s__iexact' % name:value}
                 if Member.objects.filter(**di).count() > 0:
-                    pretty_name = self.fields[name].label.lower()
                     message =_("The %(pretty_name)s is already in use. \
-Please supply a different %(pretty_name)s." % {'pretty_name': pretty_name}
+Please supply a different %(pretty_name)s." % {'pretty_name': self.fields[name].label.lower()}
                     )
                     self._errors[name] = self.error_class([message])
 
@@ -136,13 +147,27 @@ Please supply a different %(pretty_name)s." % {'pretty_name': pretty_name}
             self.fields['mobile_number'].label = _("Mobile number")
             self.fields['mobile_number'].help_text = _("The number must be in \
 international format and may start with a + sign. All other characters must \
-be numbers. No spaces allowed. An example is +234821234567.")
+be numbers. No spaces allowed. An example is %(sample_number)s." % {'sample_number' : settings.REGISTRATION_SAMPLE_NUMBER})
         
         if self.fields.has_key('receive_sms'):
-            self.fields['receive_sms'].label = _("Yes, I want to receive news & alerts about competitions, events & more from Guinness via SMS")
+            self.fields['receive_sms'].widget =  ViaSMSCheckboxInput()
+            self.fields['receive_sms'].label = _("Yes, I want to receive news & alerts about competitions, events & more from Guinness")
         
         if self.fields.has_key('receive_email'):
-            self.fields['receive_email'].label = _("via Email")
+            self.fields['receive_email'].widget =  ViaEmailCheckboxInput()
+            self.fields['receive_email'].label = ""
+            
+        if self.fields.has_key('country'):
+            self.fields['country'].label = _("Country")
+            
+        if self.fields.has_key('gender'):
+            self.fields['gender'].label = _("Gender")
+            
+        if self.fields.has_key('dob'):
+            self.fields['dob'].label = _("Date of birth")
+            
+        if self.fields.has_key('city'):
+            self.fields['city'].label = _("City")
         
     as_div = as_div
     

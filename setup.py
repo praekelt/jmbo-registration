@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='jmbo-registration',
-    version='0.0.13',
+    version='0.1.0',
     description='Registration for Jmbo.',
     long_description = open('README.md', 'r').read() + open('AUTHORS.rst', 'r').read() + open('CHANGELOG.rst', 'r').read(),
     author='Unomena',
