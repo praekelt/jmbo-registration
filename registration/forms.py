@@ -147,7 +147,7 @@ Please supply a different %(pretty_name)s." % {'pretty_name': self.fields[name].
             self.fields['mobile_number'].label = _("Mobile number")
             self.fields['mobile_number'].help_text = _("The number must be in \
 international format and may start with a + sign. All other characters must \
-be numbers. No spaces allowed. An example is %(sample_number)s." % {'sample_number' : settings.REGISTRATION_SAMPLE_NUMBER})
+be numbers. No spaces allowed. An example is %(sample_number)s.") % {'sample_number' : settings.REGISTRATION_SAMPLE_NUMBER}
         
         if self.fields.has_key('receive_sms'):
             self.fields['receive_sms'].widget =  ViaSMSCheckboxInput()
