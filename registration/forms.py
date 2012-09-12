@@ -39,7 +39,7 @@ class JoinForm(UserCreationForm):
     """Custom join form"""
     accept_terms = forms.BooleanField(required=True, label="", widget=TermsCheckboxInput)
     offsite_invite = forms.IntegerField(required=False, widget=forms.HiddenInput())
-    remember_me = forms.BooleanField(required=False, initial=True, label="", widget=RememberMeCheckboxInput)
+    remember_me = forms.BooleanField(required=False, initial=False, label="", widget=RememberMeCheckboxInput)
     
     class Meta:
         model = Member
