@@ -17,7 +17,7 @@ from foundry.ambientmobile import AmbientSMS, AmbientSMSError
 from preferences import preferences
 from jmbo.forms import as_div
 
-from foundry.models import Member, DefaultAvatar
+from foundry.models import Member, DefaultAvatar, Country
 from foundry.forms import TermsCheckboxInput, RememberMeCheckboxInput
 from foundry.widgets import OldSchoolDateWidget
 
@@ -159,6 +159,7 @@ be numbers. No spaces allowed. An example is %(sample_number)s.") % {'sample_num
             
         if self.fields.has_key('country'):
             self.fields['country'].label = _("Country")
+            self.fields['country'].initial = Country.objects.all()[0] if Country.objects.all() else None
             
         if self.fields.has_key('gender'):
             self.fields['gender'].label = _("Gender")
