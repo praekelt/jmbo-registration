@@ -158,7 +158,7 @@ be numbers. No spaces allowed. An example is %(sample_number)s.") % {'sample_num
             self.fields['receive_email'].label = ""
             
         if self.fields.has_key('country'):
-            self.fields['country'].label = _("Country")
+            self.fields['country'].label = _("Country of Residence")
             self.fields['country'].initial = Country.objects.all()[0] if Country.objects.all() else None
             
         if self.fields.has_key('gender'):
