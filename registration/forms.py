@@ -140,7 +140,7 @@ Please supply a different %(pretty_name)s." % {'pretty_name': self.fields[name].
 
         # Make some messages and labels more reassuring
         self.fields['username'].help_text = _("This name is visible to other users on the site.")
-        self.fields['password1'].help_text = _("We will always store your password securely and encrypted.")
+        self.fields['password1'].help_text = None
         if self.fields.has_key('email'):
             self.fields['email'].help_text = _("Your email address is required in case you lose your password.")
         if self.fields.has_key('mobile_number'):
