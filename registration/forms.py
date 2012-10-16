@@ -27,13 +27,13 @@ class ViaSMSCheckboxInput(forms.widgets.CheckboxInput):
 
     def render(self, *args, **kwargs):
         result = super(ViaSMSCheckboxInput, self).render(*args, **kwargs)
-        return result + ugettext("via SMS")
+        return result + ugettext("by SMS")
     
 class ViaEmailCheckboxInput(forms.widgets.CheckboxInput):
 
     def render(self, *args, **kwargs):
         result = super(ViaEmailCheckboxInput, self).render(*args, **kwargs)
-        return result + ugettext("via Email")
+        return result + ugettext("by Email")
 
 class JoinForm(UserCreationForm):
     """Custom join form"""
@@ -48,6 +48,8 @@ class JoinForm(UserCreationForm):
         mobile_number = self.cleaned_data["mobile_number"]
         if not re.match(r'[\+]?[0-9]*$', mobile_number):
             raise forms.ValidationError(_("Please enter a valid number"))
+        if not mobile_number.startswith('233'):
+            raise forms.ValidationError(_("Sorry, we don't recognise that number. Make sure you add %(country_code)s in front of your number and don't leave any spaces." % {'country_code' : settings.COUNTRY_CODE}))
         return mobile_number
 
     def clean(self):
@@ -145,13 +147,12 @@ Please supply a different %(pretty_name)s." % {'pretty_name': self.fields[name].
             # There is somebug in Django that does not allow translation to be
             # applied. Workaround.
             self.fields['mobile_number'].label = _("Mobile number")
-            self.fields['mobile_number'].help_text = _("The number must be in \
-international format and may start with a + sign. All other characters must \
-be numbers. No spaces allowed. An example is %(sample_number)s.") % {'sample_number' : settings.REGISTRATION_SAMPLE_NUMBER}
+            self.fields['mobile_number'].help_text = _("We need your number with the %(country_adjective)s dialing code. Example: %(sample_number)s.") % {'sample_number' : settings.REGISTRATION_SAMPLE_NUMBER,
+                                                                                                                                                          'country_adjective' : settings.COUNTRY_ADJECTIVE}
         
         if self.fields.has_key('receive_sms'):
             self.fields['receive_sms'].widget =  ViaSMSCheckboxInput()
-            self.fields['receive_sms'].label = _("Yes, I want to receive news & alerts about competitions, events & more from Guinness")
+            self.fields['receive_sms'].label = _("Yes, I would like to hear more from Guinness")
         
         if self.fields.has_key('receive_email'):
             self.fields['receive_email'].widget =  ViaEmailCheckboxInput()
