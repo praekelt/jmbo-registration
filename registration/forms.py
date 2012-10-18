@@ -48,7 +48,7 @@ class JoinForm(UserCreationForm):
         mobile_number = self.cleaned_data["mobile_number"]
         if not re.match(r'[\+]?[0-9]*$', mobile_number):
             raise forms.ValidationError(_("Please enter a valid number"))
-        if not mobile_number.startswith('233'):
+        if not mobile_number.startswith(settings.COUNTRY_CODE):
             raise forms.ValidationError(_("Sorry, we don't recognise that number. Make sure you add %(country_code)s in front of your number and don't leave any spaces." % {'country_code' : settings.COUNTRY_CODE}))
         return mobile_number
 
