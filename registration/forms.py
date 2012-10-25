@@ -45,11 +45,18 @@ class JoinForm(UserCreationForm):
         model = Member
 
     def clean_mobile_number(self):
-        mobile_number = self.cleaned_data["mobile_number"]
+        mobile_number = self.cleaned_data["mobile_number"].strip()
         if not re.match(r'[\+]?[0-9]*$', mobile_number):
             raise forms.ValidationError(_("Please enter a valid number"))
-        if not mobile_number.startswith(settings.COUNTRY_CODE):
-            raise forms.ValidationError(_("Sorry, we don't recognise that number. Make sure you add %(country_code)s in front of your number and don't leave any spaces." % {'country_code' : settings.COUNTRY_CODE}))
+        if mobile_number[0] == '+':
+            mobile_number = mobile_number[1:]
+        ok_country_code = False
+        for country_code in settings.COUNTRY_CODE:
+            if mobile_number.startswith(country_code):
+                ok_country_code = True
+        if not ok_country_code:
+            raise forms.ValidationError(_("Sorry, we don't recognise that number. Make sure you add %(country_code)s in front of your number and don't leave any spaces." % {'country_code' : ' or '.join(settings.COUNTRY_CODE)}))
+        
         return mobile_number
 
     def clean(self):
