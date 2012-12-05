@@ -20,14 +20,14 @@ from registration import models
 #==============================================================================
 class RegistrationView(FormView):
     
-    @property
-    def show_age_gateway(self):
-        return preferences.GeneralPreferences.show_age_gateway and not self.request.COOKIES.get('age_gateway_passed')
-    
+    def __init__(self, *args, **kwargs):
+        super(RegistrationView, self).__init__(*args, **kwargs)
+        self.show_age_gateway = preferences.GeneralPreferences.show_age_gateway
     #--------------------------------------------------------------------------
     def get_form_kwargs(self):
         kwargs = super(RegistrationView, self).get_form_kwargs()
         kwargs.update({ 'show_age_gateway' : self.show_age_gateway,
+                        'age_gateway_passed' : self.request.COOKIES.get('age_gateway_passed'),
                         'offsite_invite' : self.request.session['invitation'] if self.request.session.has_key('invitation') else None 
                         })
         return kwargs

@@ -64,7 +64,7 @@ class JoinForm(UserCreationForm):
 
         # Validate required fields
         required_fields = preferences.RegistrationPreferences.required_fields
-        if self.show_age_gateway:
+        if self.show_age_gateway and 'dob' in self.fields:
             if 'country' not in required_fields:
                 required_fields.append('country')
             if 'dob' not in required_fields:
@@ -99,6 +99,7 @@ Please supply a different %(pretty_name)s.") % {'pretty_name': self.fields[name]
 
     def __init__(self, *args, **kwargs):
         self.show_age_gateway = kwargs.pop('show_age_gateway')
+        self.age_gateway_passed = kwargs.pop('age_gateway_passed')
         
         # Set-up the offsite invitation defaults.
         offsite_invite = kwargs.pop('offsite_invite')
@@ -116,10 +117,14 @@ Please supply a different %(pretty_name)s.") % {'pretty_name': self.fields[name]
 
         display_fields = preferences.RegistrationPreferences.display_fields
         if self.show_age_gateway:
-            if 'country' not in display_fields:
+            if not self.age_gateway_passed:
+                if 'country' not in display_fields:
+                    display_fields.append('country')
+                if 'dob' not in display_fields:
+                    display_fields.append('dob')
+            # if the user is re-entering their dob, it needs to be re-validated using country
+            elif 'dob' in display_fields and 'country' not in display_fields:
                 display_fields.append('country')
-            if 'dob' not in display_fields:
-                display_fields.append('dob')
         for name, field in self.fields.items():
             # Skip over protected fields
             if name in ('id', 'username', 'password1', 'password2', 'accept_terms', 'offsite_invite', 'remember_me'):
@@ -129,7 +134,7 @@ Please supply a different %(pretty_name)s.") % {'pretty_name': self.fields[name]
             
         # Set some fields required
         required_fields = preferences.RegistrationPreferences.required_fields
-        if self.show_age_gateway:            
+        if self.show_age_gateway and 'dob' in display_fields:
             if 'country' not in required_fields:
                 required_fields.append('country')
             if 'dob' not in required_fields:
