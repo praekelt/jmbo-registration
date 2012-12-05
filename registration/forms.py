@@ -55,7 +55,7 @@ class JoinForm(UserCreationForm):
             if mobile_number.startswith(country_code):
                 ok_country_code = True
         if not ok_country_code:
-            raise forms.ValidationError(_("Sorry, we don't recognise that number. Make sure you add %(country_code)s in front of your number and don't leave any spaces." % {'country_code' : ' or '.join(settings.COUNTRY_CODE)}))
+            raise forms.ValidationError(ugettext("Sorry, we don't recognise that number. Make sure you add %(country_code)s in front of your number and don't leave any spaces.") % {'country_code' : ' or '.join(settings.COUNTRY_CODE)})
         
         return mobile_number
 
@@ -93,9 +93,8 @@ Please supply a different %(pretty_name)s." % {'pretty_name': self.fields[name].
             if country and dob:
                 today = datetime.date.today()
                 if dob > today.replace(today.year - country.minimum_age):
-                    msg = "You must be at least %s years of age to use this site." \
-                        % country.minimum_age
-                    raise forms.ValidationError(_(msg))
+                    raise forms.ValidationError(ugettext("You must be at least %s years of age to use this site.") \
+                        % country.minimum_age)
 
         return cleaned_data
 
