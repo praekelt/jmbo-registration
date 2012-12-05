@@ -81,9 +81,8 @@ class JoinForm(UserCreationForm):
             if value is not None:
                 di = {'%s__iexact' % name:value}
                 if Member.objects.filter(**di).count() > 0:
-                    message =_("The %(pretty_name)s is already in use. \
-Please supply a different %(pretty_name)s." % {'pretty_name': self.fields[name].label.lower()}
-                    )
+                    message =ugettext("The %(pretty_name)s is already in use. \
+Please supply a different %(pretty_name)s.") % {'pretty_name': self.fields[name].label.lower()}
                     self._errors[name] = self.error_class([message])
 
         # Age gateway fields
