@@ -21,7 +21,7 @@ from foundry.models import Member, DefaultAvatar, Country
 from foundry.forms import TermsCheckboxInput, RememberMeCheckboxInput
 from foundry.widgets import OldSchoolDateWidget
 
-from registration import models
+from jmbo_registration import models
 
 class ViaSMSCheckboxInput(forms.widgets.CheckboxInput):
 
@@ -55,7 +55,7 @@ class JoinForm(UserCreationForm):
             if mobile_number.startswith(country_code):
                 ok_country_code = True
         if not ok_country_code:
-            raise forms.ValidationError(_("Sorry, we don't recognise that number. Make sure you add %(country_code)s in front of your number and don't leave any spaces." % {'country_code' : ' or '.join(settings.COUNTRY_CODE)}))
+            raise forms.ValidationError(ugettext("Sorry, we don't recognise that number. Make sure you add %(country_code)s in front of your number and don't leave any spaces.") % {'country_code' : ' or '.join(settings.COUNTRY_CODE)})
         
         return mobile_number
 
@@ -64,7 +64,7 @@ class JoinForm(UserCreationForm):
 
         # Validate required fields
         required_fields = preferences.RegistrationPreferences.required_fields
-        if self.show_age_gateway:
+        if self.show_age_gateway and 'dob' in self.fields:
             if 'country' not in required_fields:
                 required_fields.append('country')
             if 'dob' not in required_fields:
@@ -81,9 +81,8 @@ class JoinForm(UserCreationForm):
             if value is not None:
                 di = {'%s__iexact' % name:value}
                 if Member.objects.filter(**di).count() > 0:
-                    message =_("The %(pretty_name)s is already in use. \
-Please supply a different %(pretty_name)s." % {'pretty_name': self.fields[name].label.lower()}
-                    )
+                    message =ugettext("The %(pretty_name)s is already in use. \
+Please supply a different %(pretty_name)s.") % {'pretty_name': self.fields[name].label.lower()}
                     self._errors[name] = self.error_class([message])
 
         # Age gateway fields
@@ -93,14 +92,14 @@ Please supply a different %(pretty_name)s." % {'pretty_name': self.fields[name].
             if country and dob:
                 today = datetime.date.today()
                 if dob > today.replace(today.year - country.minimum_age):
-                    msg = "You must be at least %s years of age to use this site." \
-                        % country.minimum_age
-                    raise forms.ValidationError(_(msg))
+                    raise forms.ValidationError(ugettext("You must be at least %s years of age to use this site.") \
+                        % country.minimum_age)
 
         return cleaned_data
 
     def __init__(self, *args, **kwargs):
         self.show_age_gateway = kwargs.pop('show_age_gateway')
+        self.age_gateway_passed = kwargs.pop('age_gateway_passed')
         
         # Set-up the offsite invitation defaults.
         offsite_invite = kwargs.pop('offsite_invite')
@@ -118,10 +117,14 @@ Please supply a different %(pretty_name)s." % {'pretty_name': self.fields[name].
 
         display_fields = preferences.RegistrationPreferences.display_fields
         if self.show_age_gateway:
-            if 'country' not in display_fields:
+            if not self.age_gateway_passed:
+                if 'country' not in display_fields:
+                    display_fields.append('country')
+                if 'dob' not in display_fields:
+                    display_fields.append('dob')
+            # if the user is re-entering their dob, it needs to be re-validated using country
+            elif 'dob' in display_fields and 'country' not in display_fields:
                 display_fields.append('country')
-            if 'dob' not in display_fields:
-                display_fields.append('dob')
         for name, field in self.fields.items():
             # Skip over protected fields
             if name in ('id', 'username', 'password1', 'password2', 'accept_terms', 'offsite_invite', 'remember_me'):
@@ -131,7 +134,7 @@ Please supply a different %(pretty_name)s." % {'pretty_name': self.fields[name].
             
         # Set some fields required
         required_fields = preferences.RegistrationPreferences.required_fields
-        if self.show_age_gateway:            
+        if self.show_age_gateway and 'dob' in display_fields:
             if 'country' not in required_fields:
                 required_fields.append('country')
             if 'dob' not in required_fields:
@@ -154,7 +157,7 @@ Please supply a different %(pretty_name)s." % {'pretty_name': self.fields[name].
             # There is somebug in Django that does not allow translation to be
             # applied. Workaround.
             self.fields['mobile_number'].label = _("Mobile number")
-            self.fields['mobile_number'].help_text = _("We need your number with the %(country_adjective)s dialing code. Example: %(sample_number)s.") % {'sample_number' : settings.REGISTRATION_SAMPLE_NUMBER,
+            self.fields['mobile_number'].help_text = _("We need your number with the %(country_adjective)s dialing code. Example: %(sample_number)s.") % {'sample_number' : settings.JMBO_REGISTRATION_SAMPLE_NUMBER,
                                                                                                                                                           'country_adjective' : settings.COUNTRY_ADJECTIVE}
         
         if self.fields.has_key('receive_sms'):

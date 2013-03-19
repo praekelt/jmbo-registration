@@ -1,10 +1,10 @@
 include AUTHORS.rst
 include CHANGELOG.rst
 include README.rst
-recursive-include registration/fixtures *
-recursive-include registration/locale *
-recursive-include registration/management *
-recursive-include registration/migrations *
-recursive-include registration/static *
-recursive-include registration/templates *
-recursive-include registration/templatetags *
+recursive-include jmbo_registration/fixtures *
+recursive-include jmbo_registration/locale *
+recursive-include jmbo_registration/management *
+recursive-include jmbo_registration/migrations *
+recursive-include jmbo_registration/static *
+recursive-include jmbo_registration/templates *
+recursive-include jmbo_registration/templatetags *

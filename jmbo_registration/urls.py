@@ -5,27 +5,27 @@ Created on 25 May 2012
 '''
 from django.conf.urls.defaults import patterns, url
 
-from registration import forms, views
+from jmbo_registration import forms, views
 
 urlpatterns = patterns('',
     url(
         r'^join/$',
         views.RegistrationView.as_view(form_class=forms.JoinForm,
-                                       template_name='registration/join.html'),
+                                       template_name='jmbo_registration/join.html'),
         name='join',
         ),
     
     url(
         r'^join-finish/$',
         views.MemberUpdateView.as_view(form_class=forms.JoinFinishForm,
-                                       template_name='registration/join_finish.html',
+                                       template_name='jmbo_registration/join_finish.html',
                                        success_url='/'),
         name='join-finish',
         ),
     
     url(r'^offsite_invite/$',
         views.CreateOffSiteInviteView.as_view(form_class=forms.OffsiteInviteForm,
-                                              template_name='registration/offsite_invite.html',
+                                              template_name='jmbo_registration/offsite_invite.html',
                                               success_url='/friends/my-friends/'),
         name='create_offsite_invite'
         ),
