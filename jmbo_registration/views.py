@@ -15,7 +15,7 @@ from django.shortcuts import get_object_or_404
 
 from preferences import preferences
 
-from registration import models
+from jmbo_registration import models
 
 #==============================================================================
 class RegistrationView(FormView):

@@ -5,7 +5,7 @@ Created on 25 May 2012
 '''
 from django.contrib import admin
 
-from registration import models
+from jmbo_registration import models
 
 admin.site.register(models.OffSiteInvite)
 admin.site.register(models.URLToken)

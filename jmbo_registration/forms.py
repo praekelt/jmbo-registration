@@ -21,7 +21,7 @@ from foundry.models import Member, DefaultAvatar, Country
 from foundry.forms import TermsCheckboxInput, RememberMeCheckboxInput
 from foundry.widgets import OldSchoolDateWidget
 
-from registration import models
+from jmbo_registration import models
 
 class ViaSMSCheckboxInput(forms.widgets.CheckboxInput):
 
@@ -157,7 +157,7 @@ Please supply a different %(pretty_name)s.") % {'pretty_name': self.fields[name]
             # There is somebug in Django that does not allow translation to be
             # applied. Workaround.
             self.fields['mobile_number'].label = _("Mobile number")
-            self.fields['mobile_number'].help_text = _("We need your number with the %(country_adjective)s dialing code. Example: %(sample_number)s.") % {'sample_number' : settings.REGISTRATION_SAMPLE_NUMBER,
+            self.fields['mobile_number'].help_text = _("We need your number with the %(country_adjective)s dialing code. Example: %(sample_number)s.") % {'sample_number' : settings.JMBO_REGISTRATION_SAMPLE_NUMBER,
                                                                                                                                                           'country_adjective' : settings.COUNTRY_ADJECTIVE}
         
         if self.fields.has_key('receive_sms'):
