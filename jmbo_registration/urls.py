@@ -4,6 +4,7 @@ Created on 25 May 2012
 @author: euan
 '''
 from django.conf.urls.defaults import patterns, url
+from django.contrib.auth.decorators import login_required
 
 from jmbo_registration import forms, views
 
@@ -17,16 +18,16 @@ urlpatterns = patterns('',
     
     url(
         r'^join-finish/$',
-        views.MemberUpdateView.as_view(form_class=forms.JoinFinishForm,
+        login_required(views.MemberUpdateView.as_view(form_class=forms.JoinFinishForm,
                                        template_name='jmbo_registration/join_finish.html',
-                                       success_url='/'),
+                                       success_url='/')),
         name='join-finish',
         ),
     
     url(r'^offsite_invite/$',
-        views.CreateOffSiteInviteView.as_view(form_class=forms.OffsiteInviteForm,
+        login_required(views.CreateOffSiteInviteView.as_view(form_class=forms.OffsiteInviteForm,
                                               template_name='jmbo_registration/offsite_invite.html',
-                                              success_url='/friends/my-friends/'),
+                                              success_url='/friends/my-friends/')),
         name='create_offsite_invite'
         ),
     
