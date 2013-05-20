@@ -2,7 +2,7 @@ jmbo-registration
 =================
 
 Migrating `registration` to `jmbo_registration`
-***********************************************
+-----------------------------------------------
 
 `registration` was renamed to `jmbo_registration` to avoid clashing with `django-registration`. If migrations `0001` and `0002` had been run before
 the renaming, you need to do the following:
